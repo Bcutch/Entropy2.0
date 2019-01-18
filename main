@@ -1,0 +1,362 @@
+package com.company;
+
+import com.sun.deploy.util.ArrayUtil;
+
+import java.util.*;
+import java.io.*;
+import static com.company.ProjConstants.*;
+
+public class Main {
+
+    public static String[][] index = new String[MAX_DATA][2];
+    public static String frequency[][] = new String[MAX_DATA][2];
+    public static int totalFreq = 0;
+    private static int intValue = 0;
+    private static String fileName = null;
+    private static String userFile = null;
+    private static String userFile2 = null;
+    private static String userFile3 = null;
+    private static File bwFile = new File(fileName + "_out.txt");
+
+    public void displayFinalData() throws IOException {
+
+        Entropy encode = new Entropy(ENCODE);
+        Entropy decode = new Entropy(DECODE);
+
+        BufferedWriter encodeFile = new BufferedWriter(new FileWriter(bwFile));
+
+        System.out.println("========================================");
+        encodeFile.write("========================================");
+        encodeFile.newLine();
+
+        System.out.println("Data File: " + fileName);
+        encodeFile.write("Data File: " + fileName);
+        encodeFile.newLine();
+
+        System.out.println("Data Result File: " + bwFile);
+        encodeFile.write("Data Result File: " + bwFile);
+        encodeFile.newLine();
+
+        System.out.println();
+        System.out.println("-------------------");
+        encodeFile.newLine();
+        encodeFile.write("-------------------");
+        encodeFile.newLine();
+
+        System.out.println("Number of messages: " + encode.numMsgs(intValue));
+        encodeFile.write("Number of messages: " + encode.numMsgs(intValue));
+        encodeFile.newLine();
+
+        System.out.println("Max Number of Bits: " + encode.calcMaxBits());
+        encodeFile.write("Max Number of Bits: " + encode.calcMaxBits());
+        encodeFile.newLine();
+
+        System.out.println("Entropy: " + encode.calcEntropy());
+        encodeFile.write("Entropy: " + encode.calcEntropy());
+        encodeFile.newLine();
+
+        System.out.println();
+        System.out.printf("Message\t\tFrequency\t# of Bits\tProbability\n");
+        encodeFile.newLine();
+        encodeFile.write("Message\t\tFrequency\t# of Bits\tProbability");
+        encodeFile.newLine();
+
+        System.out.printf("-------\t\t---------\t---------\t-----------\n");
+        encodeFile.write("-------\t\t---------\t---------\t-----------");
+        encodeFile.newLine();
+
+        for (int i = 0; i < MAX_DATA; i++) {
+            if (!frequency[i][0].equals("INVALID")) {
+                if (frequency[i][0].length() > 7) {
+
+                    System.out.printf(frequency[i][0] + "\t\t" + frequency[i][1] + "\t\t\t" + encode.calcMsgBits(encode.calcMsgProb(frequency[i][0])) + "\t\t\t" + encode.calcMsgProb(frequency[i][0]) + "\n");
+                    encodeFile.write(frequency[i][0] + "\t\t" + frequency[i][1] + "\t\t\t" + encode.calcMsgBits(encode.calcMsgProb(frequency[i][0])) + "\t\t\t" + encode.calcMsgProb(frequency[i][0]));
+                    encodeFile.newLine();
+
+                }
+                else if (frequency[i][0].length() <4) {
+                    System.out.printf(frequency[i][0] + "\t\t\t\t" + frequency[i][1] + "\t\t\t" + encode.calcMsgBits(encode.calcMsgProb(frequency[i][0])) + "\t\t\t" + encode.calcMsgProb(frequency[i][0]) + "\n");
+                    encodeFile.write(frequency[i][0] + "\t\t\t\t" + frequency[i][1] + "\t\t\t" + encode.calcMsgBits(encode.calcMsgProb(frequency[i][0])) + "\t\t\t" + encode.calcMsgProb(frequency[i][0]));
+                    encodeFile.newLine();
+                }
+                else {
+                    System.out.printf(frequency[i][0] + "\t\t\t" + frequency[i][1] + "\t\t\t" + encode.calcMsgBits(encode.calcMsgProb(frequency[i][0])) + "\t\t\t" + encode.calcMsgProb(frequency[i][0]) + "\n");
+                    encodeFile.write(frequency[i][0] + "\t\t\t" + frequency[i][1] + "\t\t\t" + encode.calcMsgBits(encode.calcMsgProb(frequency[i][0])) + "\t\t\t" + encode.calcMsgProb(frequency[i][0]));
+                    encodeFile.newLine();
+                }
+            }
+        }
+
+        System.out.println();
+        System.out.println("--------------------------------------------");
+        encodeFile.newLine();
+        encodeFile.write("--------------------------------------------");
+        encodeFile.newLine();
+
+    }
+
+    public void displayFinalData2() throws IOException {
+
+        Entropy encode = new Entropy(ENCODE);
+        Entropy decode = new Entropy(DECODE);
+
+        BufferedWriter encodeFile2 = new BufferedWriter(new FileWriter(bwFile));
+
+        System.out.println();
+        System.out.println("Message Data Encoded nto: " + userFile2);
+        encodeFile2.newLine();
+        encodeFile2.write("Message Data Encoded nto: " + userFile2);
+        encodeFile2.newLine();
+
+        System.out.println();
+        System.out.println("Decoding " + userFile2 + " into: " + userFile3);
+        encodeFile2.newLine();
+        encodeFile2.write("Decoding " + userFile2 + " into: " + userFile3);
+        encodeFile2.newLine();
+
+        System.out.println();
+        System.out.printf("Original Data\tEncoded Data\tDecoded Data\n");
+        encodeFile2.newLine();
+        encodeFile2.write("Original Data\tEncoded Data\tDecoded Data");
+        encodeFile2.newLine();
+
+        System.out.printf("-------------\t------------\t------------\n");
+        encodeFile2.write("Original Data\t Encoded Data\tDecoded Data");
+        encodeFile2.newLine();
+
+        File f = new File(userFile);
+        File f2 = new File(userFile2);
+        File f3 = new File(userFile3);
+
+        Scanner sScan1 = new Scanner(f);
+        Scanner sScan2 = new Scanner(f2);
+        Scanner sScan3 = new Scanner(f3);
+
+        for (int i = 0; i < MAX_DATA; i++) {
+            if (sScan1.hasNext() && sScan2.hasNextInt() && sScan3.hasNext()) {
+                String ss1 = sScan1.next();
+                int ss2 = sScan2.nextInt();
+                String ss3 = sScan3.next();
+
+                if (ss1.length() > 7) {
+                    System.out.printf(ss1 + "\t\t\t" + ss2 + "\t\t\t" + ss3 + "\n");
+                    encodeFile2.write(ss1 + "\t\t\t" + ss2 + "\t\t\t" + ss3);
+                    encodeFile2.newLine();
+                }
+                else if (ss1.length() < 4) {
+                    System.out.printf(ss1 + "\t\t\t\t\t" + ss2 + "\t\t\t" + ss3 + "\n");
+                    encodeFile2.write(ss1 + "\t\t\t\t\t" + ss2 + "\t\t\t" + ss3);
+                    encodeFile2.newLine();
+                }
+                else {
+                    System.out.printf(ss1 + "\t\t\t\t" + ss2 + "\t\t\t" + ss3 + "\n");
+                    encodeFile2.write(ss1 + "\t\t\t\t" + ss2 + "\t\t\t" + ss3);
+                    encodeFile2.newLine();
+                }
+            }
+        }
+
+    }
+
+    public static void main(String[] args) throws IOException {
+
+        Entropy encode = new Entropy(ENCODE);
+        Entropy decode = new Entropy(DECODE);
+        Main main = new Main();
+
+        System.out.println("Please provide file of reference for encoding.");
+
+        Scanner scan = new Scanner(System.in, "UTF-8");
+        fileName = scan.next();
+
+        try {
+            File file = new File(fileName);
+            Scanner fileScan = new Scanner(file, "UTF-8");
+
+            for (int i = 0; i < MAX_DATA; i++) {
+                frequency[i][0] = "INVALID";
+                index[i][0] = "INVALID";
+            }
+
+            for (int i = 0; i < MAX_DATA; i++) {
+                frequency[i][1] = "1";
+                index[i][1] = "0";
+            }
+
+            boolean fileDone = false;
+            int Num = 0;
+            int position = 0;
+
+            while (!fileDone) {
+
+                if (fileScan.hasNext()) {
+
+                    boolean same = false;
+                    String word = fileScan.next();
+                    word = word.toLowerCase();
+
+                    for (int i = 0; i < 100; i++){
+
+                        if (word.equals(frequency[i][0])){
+
+                            same = true;
+                            Num = i;
+                        }
+                    }
+
+                    if (same){
+
+                        frequency[Num][1] = Integer.toString(Integer.parseInt(frequency[Num][1]) + 1);
+                        totalFreq++;
+                    }
+
+                    if (!same) {
+
+                        frequency[position][0] = word;
+                        position++;
+                        totalFreq++;
+                    }
+
+                }
+                else {
+
+                    fileDone = true;
+                }
+            }
+
+
+        }
+        catch (FileNotFoundException e) {
+            System.out.println(e);
+            e.printStackTrace();
+        }
+
+        Arrays.sort(frequency, Comparator.comparing(b -> b[1]));
+
+        for(int row = 0; row < 2; row++){
+            for(int column = 0; column < frequency.length / 2; column++) {
+                String temp = frequency[column][row];
+                frequency[column][row] = frequency[frequency.length - column - 1][row];
+                frequency[frequency.length - column - 1][row] = temp;
+            }
+        }
+
+
+        //File bwFile = new File(fileName + "_out.txt");
+        //BufferedWriter encodeFile = new BufferedWriter(new FileWriter(bwFile));
+
+        for (int i = 0; i < MAX_DATA; i++) {
+            if (!frequency[i][0].equals("INVALID")) {
+                //encodeFile.write(frequency[i][0] + " " + intValue);
+                //encodeFile.newLine();
+
+                index[i][0] = frequency[i][0];
+                index[i][1] = Integer.toString(intValue);
+
+                intValue++;
+            }
+        }
+
+        //encodeFile.close();
+
+        boolean encodeDone = false;
+
+        main.displayFinalData();
+
+
+        while (!encodeDone) {
+
+            System.out.println("Please provide file name you wish to encode.");
+
+            userFile = scan.next();
+
+            userFile2 = userFile.replace(".txt", "_EC.txt");
+            File bwFile2 = new File(userFile2);
+            BufferedWriter encodeFile2 = new BufferedWriter(new FileWriter(bwFile2));
+
+            try {
+                File f = new File(userFile);
+                Scanner scanFile = new Scanner(f, "UTF-8");
+
+                boolean encodeFileDone = false;
+
+                while (!encodeFileDone) {
+
+                    if (scanFile.hasNext()) {
+
+                        int msgEncoded = encode.encodeMsg( scanFile.next().toLowerCase() );
+                        encodeFile2.write(Integer.toString(msgEncoded));
+                        encodeFile2.newLine();
+                        //System.out.println(msgEncoded);
+                    }
+                    else {
+                        encodeFileDone = true;
+                        encodeFile2.close();
+                    }
+                }
+            }
+            catch (FileNotFoundException e) {
+                System.out.println(e);
+                e.printStackTrace();
+            }
+
+
+            userFile3 = userFile2.replace("_EC.txt", "_DC.txt");
+            File bwFile3 = new File(userFile3);
+            BufferedWriter decodeFile = new BufferedWriter(new FileWriter(bwFile3));
+
+            try {
+                File f2 = new File(userFile2);
+                Scanner scanECFile = new Scanner(f2, "UTF-8");
+
+                boolean decodeFileDone = false;
+
+                while (!decodeFileDone) {
+                    if (scanECFile.hasNext()) {
+                        String msg = scanECFile.next();
+                        String msgDecoded = decode.decodeMsg( msg);
+                        decodeFile.write(msgDecoded);
+                        decodeFile.newLine();
+                        //System.out.println(msg);
+                        //System.out.println(msgDecoded);
+                    }
+                    else {
+                        decodeFileDone = true;
+                        decodeFile.close();
+                    }
+                }
+
+            }
+            catch (FileNotFoundException e) {
+                System.out.println(e);
+                e.printStackTrace();
+            }
+
+            boolean good = false;
+
+            main.displayFinalData2();
+
+
+            while(!good) {
+
+                System.out.println();
+                System.out.println("Would you wish to encode another file?");
+
+                String response = scan.next();
+
+                if (response.toLowerCase().equals("yes")) {
+                    good = true;
+                }
+                else if (response.toLowerCase().equals("no")) {
+                    encodeDone = true;
+                    good = true;
+                }
+                else {
+                    System.out.println("Invalid response. Please type YES or NO");
+                }
+            }
+
+        }
+
+    }//DO NOT TOUCH
+}//NO TOUCHY
