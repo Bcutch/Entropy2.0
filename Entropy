@@ -1,0 +1,124 @@
+package com.company;
+
+import static com.company.ProjConstants.*;
+
+/**
+ * Created by 04585cut on 12/11/2018.
+ */
+public class Entropy {
+
+    private boolean ENCODE_ONLY = false;
+    private boolean DECODE_ONLY = false;
+    private int msgs = INVALID;
+
+    Entropy (int mode) {
+
+
+        boolean trash = false;
+
+        switch (mode) {
+            case ENCODE: {
+                ENCODE_ONLY = true;
+                break;
+            }
+            case DECODE: {
+                DECODE_ONLY = true;
+                break;
+            }
+            default: {
+                trash = true;
+                break;
+            }
+        }
+    }
+
+    public int encodeMsg(String Msg){
+        int rValue = INVALID;
+
+        if (ENCODE_ONLY) {
+            for (int i = 0; i < MAX_DATA; i++) {
+                if (Main.index[i][0].equals(Msg)) {
+                    rValue =  Integer.parseInt(Main.index[i][1]);
+                    break;
+                }
+                else {
+                    rValue =  INVALID_ENCODE;
+                }
+            }
+        }
+        else {
+            rValue = INVALID_ENCODE;
+        }
+
+        return rValue;
+    }
+
+    public String decodeMsg(String Msg){
+        String rValue = null;
+
+        if (DECODE_ONLY) {
+            for (int i = 0; i < MAX_DATA; i++) {
+                if (Main.index[i][1].equals(Msg)) {
+                    rValue =  Main.index[i][0];
+                    break;
+                }
+                else {
+                    rValue =  INVALID_DECODE;
+                }
+            }
+        }
+        else {
+            rValue = INVALID_DECODE;
+        }
+
+        return rValue;
+    }
+
+    public int calcMaxBits() {
+        double bits = Math.log(msgs)/Math.log(2);
+        int bitNum = (int)Math.ceil(bits);
+        if (bitNum == 0) {
+            bitNum = 1;
+        }
+
+        return bitNum;
+    }
+
+    public int calcMsgBits(double prob) {
+        double bits = - (Math.log(prob) / Math.log(2));
+        int bitNum = (int)Math.ceil(bits);
+        if (bitNum == 0) {
+            bitNum = 1;
+        }
+
+        return bitNum;
+    }
+
+    public int numMsgs(int num) {
+        msgs = num;
+        return msgs;
+    }
+
+    public double calcMsgProb(String msg) {
+        double rVal = INVALID;
+        for (int i = 0; i < MAX_DATA; i++) {
+            if (Main.frequency[i][0].equals(msg)) {
+                double prob = (double) Integer.parseInt(Main.frequency[i][1]) / (double) Main.totalFreq;
+                rVal = prob;
+            }
+        }
+
+        return rVal;
+    }
+
+    public double calcEntropy() {
+        double sum = 0;
+        for (int i = 0; i < MAX_DATA; i++) {
+            if (!Main.index[i][0].equals("INVALID")) {
+                double tempEntropy = (calcMsgProb(Main.index[i][0]) * calcMsgBits(calcMsgProb(Main.index[i][0])));
+                sum = sum + tempEntropy;
+            }
+        }
+        return sum;
+    }
+}
